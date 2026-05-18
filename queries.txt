@@ -1,0 +1,53 @@
+//Nested Query
+
+query ExampleQuery($gameId: ID!) {
+  game(id: $gameId){
+    id,
+    platform,
+    reviews {
+      id,
+      rating
+    }
+  }
+}
+___________________________________________________________________
+
+query ExampleQuery($authorId: ID!) {
+  author(id: $authorId) {
+    id,
+    name,
+    reviews {
+      id,
+      comment
+    }
+  }
+}
+_____________________________________________________________________
+
+query ExampleQuery($reviewId: ID!) {
+  review(id: $reviewId) {
+    id,
+    rating,
+    game_id,
+    game {
+      id,
+      title
+    },
+    author {
+      id,
+      name
+    }
+  }
+}
+_____________________________________________________________________
+
+//Mutations
+
+mutation updateMut($update: editGameInput){
+  updateGame(id: "5", edit: $update){
+    id,
+    title,
+    platform
+  }
+}
+_____________________________________________________________________
