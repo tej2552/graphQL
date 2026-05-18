@@ -1,0 +1,11 @@
+query ExampleQuery($gameId: ID!) {
+  game(id: $gameId) {
+    id
+    platform
+
+    reviews {
+      id
+      rating
+    }
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "GAME" : ["id", "title", "platforms"],
+  "AUTHOR" : ["id", "name", "verified"],
+  "REVIEWS" : ["id", "rating", "content"]
+}
