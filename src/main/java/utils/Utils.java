@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 
-public class utils {
+public class Utils {
     public JsonNode readJson(String file, String keyPath) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
 

@@ -1,0 +1,6 @@
+{
+  "getGameById" : {
+    "gameId" : "1",
+    "shouldInclude" : true
+  }
+}

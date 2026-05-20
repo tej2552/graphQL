@@ -1,20 +1,23 @@
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import utils.Utils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class Payload {
 
-    public Map<String, Object> buildPayload(String str, Map<String, String> variables) throws IOException {
+    Utils utils = new Utils();
+
+    public Map<String, Object> buildPayload(String str) throws IOException {
         Map<String, Object> payload = new HashMap<>();
 
         payload.put("query", extractQuery(str));
-        payload.put("variables", variables);
+        payload.put("variables", constructVariablePayload(str));
 
         return payload;
     }
@@ -28,27 +31,43 @@ public class Payload {
         for(String block : blocks){
             block = block.trim();
             if(block.trim().startsWith(str)){
-                String[] lines = block.split("\n", 3);
-                return lines[2].trim();
+                String[] lines = block.split("\n", 2);
+                return lines[1].trim();
             }
         }
 
         throw new RuntimeException("Query Not Found");
     }
 
-    public String extractVariables(String str) throws IOException {
-        String content = Files.readString(Path.of("src/main/java/queries/queries.graphql"));
+    public Map<String, Object> getVariableCandidatesMap(String query) throws IOException {
+        String q = extractQuery(query);
+        String queryLine = q.split("\\{", 2)[0];
+        String queryPortion = queryLine.split("\\(")[1].split("\\)")[0];
 
-        String[] blocks = content.split("#name:");
-
-        for(String block : blocks){
-            block = block.trim();
-            if(block.trim().startsWith(str)){
-                String[] lines = block.split("\n", 3);
-                return lines[1].trim().split(":")[1];
-            }
+        if(queryPortion.trim().isEmpty()){
+            return null;
         }
 
-        throw new RuntimeException("Query Not Found");
+        Map<String, Object> variables = new HashMap<>();
+
+        String[] variableCandidates = queryPortion.split("[\n,]");;
+
+        for(String variableCandidate : variableCandidates){
+            String value = variableCandidate.split("\\$")[1];
+            variables.put(value.split(":")[0], value.split(":")[1]);
+        }
+
+        return variables;
+    }
+
+    public ArrayList<String> getVariables(String query) throws IOException {
+        return new ArrayList<>(getVariableCandidatesMap(query).keySet());
+    }
+
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> constructVariablePayload(String query) throws IOException {
+        JsonNode node = utils.readJson("src/main/java/variables/variables.json", "");
+
+        return (Map<String, Object>) new ObjectMapper().convertValue(node.path(query), Map.class);
     }
 }

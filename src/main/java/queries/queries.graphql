@@ -1,12 +1,11 @@
 #name: getGameById
-#variables: 1
-query ($gameId: ID!) {
+query ($gameId: ID!, $shouldInclude: Boolean!) {
   game(id: $gameId) {
     id
     title
     platform
 
-    reviews {
+    reviews @include(if: $shouldInclude){
       id
       rating
       author {

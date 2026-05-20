@@ -13,12 +13,11 @@ public class APITests {
     @Test
     public void shouldFetchData() throws IOException {
 
-        Map<String, String> variables = new HashMap<>();
-        variables.put("gameId", payload.extractVariables("getGameById").trim());
+        String queryName = "getGameById";
 
         RestAssured.given()
                 .spec(specBuilder.buildRequestSpec())
-                .body(payload.buildPayload("getGameById", variables)).when()
+                .body(payload.buildPayload(queryName)).when()
                 .post()
                 .then().statusCode(200)
                 .log().all();
