@@ -1,11 +1,17 @@
-query ExampleQuery($gameId: ID!) {
+#name: getGameById
+#variables: 1
+query ($gameId: ID!) {
   game(id: $gameId) {
     id
+    title
     platform
 
     reviews {
       id
       rating
+      author {
+        name
+      }
     }
   }
 }
